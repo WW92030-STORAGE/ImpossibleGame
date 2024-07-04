@@ -100,10 +100,12 @@ void rect(int x1, int y1, int x2, int y2) {
 }
 
 char* lvldat = 
-"88:"
+"90:"
+"7,[2.000000 5.000000],0:"
 "1,[3.000000 0.000000],0:"
 "3,[9.000000 0.000000],0:"
 "1,[10.000000 0.000000],0:"
+"7,[10.000000 10.000000],0:"
 "1,[11.000000 0.000000],0:"
 "1,[12.000000 0.000000],0:"
 "1,[13.000000 0.000000],0:"
@@ -181,6 +183,7 @@ char* lvldat =
 "1,[95.000000 0.000000],0:"
 "2,[95.000000 20.000000],0:"
 "1,[96.000000 0.000000],0:"
+"7,[96.000000 20.000000],0:"
 "2,[96.000000 20.000000],0:"
 "1,[97.000000 0.000000],0:"
 "2,[97.000000 20.000000],0:"
@@ -188,7 +191,6 @@ char* lvldat =
 "2,[98.000000 20.000000],0:"
 "1,[99.000000 0.000000],0:"
 "2,[99.000000 20.000000],0:"
-"7,[96.000000 20.000000],0:"
 ;
 
 int main()
@@ -214,7 +216,7 @@ int main()
     std::cout << resnn.toString() << "\n";
 
 	std::string waitforit;
-	// std::cin >> waitforit;
+	std::cin >> waitforit;
 
 	GameState game2(game);
 	for (int i = 0; ; i++) {
@@ -234,6 +236,8 @@ int main()
 		line(-100, offy - game2.player.pos.y * resolution, 1000, offy - game2.player.pos.y * resolution);
 
 		for (auto obj : game2.objects) {
+			if (game2.player.pos.x - obj.pos.x > 40) continue;
+			if (obj.pos.x - game2.player.pos.x > 40) continue;
 			int relx = (int)std::floor((obj.pos.x - game2.player.pos.x) * resolution) + offx;
 			int rely = (int)std::floor((obj.pos.y - game2.player.pos.y) * resolution) + offy;
 			if (obj.id == 2) rect(relx, rely, relx + resolution, rely + resolution);
