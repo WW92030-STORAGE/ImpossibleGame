@@ -8,46 +8,12 @@
 
 int main()
 {
-    GameState game;
-    srand(time(0));
+    std::ifstream level("example.lvl");
+	std::string lvldat;
 
-    game.add(Spike({3, 0}));
-    
-    game.add(Spike({10, 0}));
-    game.add(Spike({11, 0}));
-    game.add(Spike({12, 0}));
-    game.add(Spike({13, 0}));
-    game.add(PadYellow({9, 0}));
-    
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j <= i; j++) game.add(Block({20 + 4 * i, j}));
-    }
-
-	game.add(Block({36, 5}));
-	game.add(Block({36, 4}));
-	game.add(Block({36, 6}));
-	
-	game.add(Spike({50, 0}));
-	game.add(Spike({51, 0}));
-	game.add(Spike({52, 0}));
-	
-	
-	game.add(PadYellow({60, 0}));
-	for (int i = 55; i < 65; i++) game.add(Block({i, 4}));
-	
-	for (int i = 70; i < 75; i++) game.add(Spike({i, 0}));
-	game.add(OrbYellow({72, 2}));
-	
-	game.add(Block({80, 0}));
-	game.add(Block({80, 1}));
-	
-	for (int i = 81; i < 100; i++) {
-	    game.add(Spike({i, 0}));
-	    game.add(Block({i, 20}));
-	}
-	game.add(UpPortal({82, 4}));
-	game.add(OrbYellow({82, 4}));
-	for (int i = 4; i < 10; i++) game.add(Spike({84, i}));
+	std::string lvldata = "";
+	while (getline(level, lvldat)) lvldata = lvldata + lvldat + " \n";
+	GameState game = GameState::readIn(lvldata);
 
 	std::cout << "WIDTH = " << game.width << "\n";
 	
