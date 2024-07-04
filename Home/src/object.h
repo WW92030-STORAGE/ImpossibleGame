@@ -3,10 +3,16 @@
 
 #include "point.h"
 
+// There are 2 types of hitboxes: rectangular and circular.
+// The rectangular hitbox is determined by the two opposing corners.
+// Circle is a bit complicated. Imagine a square with bottom left corner HBBL and with side length max(HB width, HB height).
+// The circle lies inscribed inside this square.
+
 class Object {
     public:
     Point HBBL;
     Point HBTR;
+    bool recthitbox; 
     Point pos;
     int width;
     int height;
@@ -22,6 +28,7 @@ class Object {
         if (rotation != other.rotation) return rotation < other.rotation;
         if (HBBL != other.HBBL) return HBBL < other.HBBL;
         if (HBTR != other.HBTR) return HBTR < other.HBTR;
+        if (recthitbox != other.recthitbox) return recthitbox < other.recthitbox;
         if (width != other.width) return width < other.width;
         if (height != other.height) return height < other.height;
         if (safelanding != other.safelanding) return safelanding < other.safelanding;
@@ -49,11 +56,13 @@ class Object {
         id = -1;
         unused = true;
         rotation = 0;
+        recthitbox = true;
     }
     
     Object(const Object& other) {
         HBBL = Point(other.HBBL);
         HBTR = Point(other.HBTR);
+        recthitbox = other.recthitbox;
         pos = Point(other.pos);
         width = other.width;
         height = other.height;
@@ -124,11 +133,34 @@ class Object {
     
     // includes edge collisions
     bool intersect(Object other) {
-        if (HBBL.x > other.HBTR.x) return false;
-        if (HBTR.x < other.HBBL.x) return false;
-        if (HBBL.y > other.HBTR.y) return false;
-        if (HBTR.y < other.HBBL.y) return false;
-        return true;
+        if (recthitbox && other.recthitbox) {
+            if (HBBL.x > other.HBTR.x) return false;
+            if (HBTR.x < other.HBBL.x) return false;
+            if (HBBL.y > other.HBTR.y) return false;
+            if (HBTR.y < other.HBBL.y) return false;
+            return true;
+        }
+        if (recthitbox && !other.recthitbox) return other.intersect(*this);
+        if (!recthitbox && other.recthitbox) {
+            double radius = std::max(hbwidth(), hbheight()) / 2;
+            Point center = HBBL + Point(radius, radius);
+            if (center.x >= other.HBBL.x && center.x <= other.HBTR.x && center.y >= other.HBBL.y && center.y <= other.HBTR.y) return true;
+
+            double xp = std::max(other.HBBL.x, std::min(center.x, other.HBTR.x));
+            double yp = std::max(other.HBBL.y, std::min(center.y, other.HBTR.y));
+
+            double rsq = (xp - center.x) * (xp - center.x) + (yp - center.y) * (yp - center.y);
+            return rsq <= radius * radius;
+        }
+        if (!recthitbox && !other.recthitbox) {
+            double r1 = std::max(hbwidth(), hbheight()) / 2;
+            double r2 = std::max(other.hbwidth(), other.hbheight()) / 2;
+            double dx = (HBBL.x + r1) - (other.HBBL.x + r2);
+            double dy = (HBBL.y + r1) - (other.HBBL.y + r2);
+            double rsq = dx * dx + dy * dy;
+            return (r1 + r2) * (r1 + r2) < rsq;
+        }
+        return false;
     }
 
 	bool isSolidBlock() {
@@ -186,7 +218,7 @@ class PadYellow : public Object {
         id = 3;
         HBBL = {1.0 / 15.0, 0};
         HBTR = {14.0 / 15.0, 0.15};
-        safelanding = false;
+        safelanding = true;
         tangible = false;
     }
     
@@ -194,12 +226,13 @@ class PadYellow : public Object {
         id = 3;
         HBBL = {1.0 / 15.0, 0};
         HBTR = {14.0 / 15.0, 0.15};
-        safelanding = false;
+        safelanding = true;
         tangible = false;
         translate(p);
     }
 };
 
+// Flips grav up
 class UpPortal : public Object {
     public:
     
@@ -207,7 +240,7 @@ class UpPortal : public Object {
         id = 4;
         HBBL = {1.0 / 12.0, -0.75};
         HBTR = {11.0 / 12.0, 1.75};
-        safelanding = false;
+        safelanding = true;
         tangible = false;
 		height = 3;
     }
@@ -216,13 +249,14 @@ class UpPortal : public Object {
         id = 4;
         HBBL = {1.0 / 12.0, -0.75};
         HBTR = {11.0 / 12.0, 1.75};
-        safelanding = false;
+        safelanding = true;
         tangible = false;
         translate(p);
 		height = 3;
     }
 };
 
+// Flips grav down
 class DownPortal : public Object {
     public:
     
@@ -230,7 +264,7 @@ class DownPortal : public Object {
         id = 5;
         HBBL = {1.0 / 12.0, -0.75};
         HBTR = {11.0 / 12.0, 1.75};
-        safelanding = false;
+        safelanding = true;
         tangible = false;
 		height = 3;
     }
@@ -239,7 +273,7 @@ class DownPortal : public Object {
         id = 5;
         HBBL = {1.0 / 12.0, -0.75};
         HBTR = {11.0 / 12.0, 1.75};
-        safelanding = false;
+        safelanding = true;
         tangible = false;
         translate(p);
 		height = 3;
@@ -254,7 +288,7 @@ class OrbYellow : public Object {
         id = 6;
 		HBBL = {-0.1, -0.1};
         HBTR = {1.1, 1.1};
-        safelanding = false;
+        safelanding = true;
         tangible = true;
     }
     
@@ -262,8 +296,33 @@ class OrbYellow : public Object {
         id = 6;
 		HBBL = {-0.1, -0.1};
         HBTR = {1.1, 1.1};
+        safelanding = true;
+        tangible = true;
+        translate(p);
+    }
+};
+
+// Large Sawblade
+
+class SawbladeLarge : public Object {
+    public:
+    
+    SawbladeLarge() : Object() {
+        id = 7;
+		HBBL = {-7.0 / 12.0, -7.0 / 12.0};
+        HBTR = {19.0 / 12.0, 19.0 / 12.0};        
         safelanding = false;
         tangible = true;
+        recthitbox = false;
+    }
+    
+    SawbladeLarge(Point p) : Object() {
+        id = 7;
+		HBBL = {-7.0 / 12.0, -7.0 / 12.0};
+        HBTR = {19.0 / 12.0, 19.0 / 12.0};        
+        safelanding = false;
+        tangible = true;
+        recthitbox = false;
         translate(p);
     }
 };

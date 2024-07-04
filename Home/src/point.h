@@ -55,15 +55,15 @@ struct Point {
         y *= v;
     }
     
-    Point operator+(Point& other) { return {x + other.x, y + other.y}; }
+    Point operator+(const Point& other) { return {x + other.x, y + other.y}; }
     
-    Point operator-(Point& other) { return {x - other.x, y - other.y}; }
+    Point operator-(const Point& other) { return {x - other.x, y - other.y}; }
     
     Point operator*(double other) { return {x * other, y * other}; }
     
-    void operator+=(Point& other) { add(other); }
+    void operator+=(const Point& other) { add(other); }
     
-    void operator-=(Point& other) { sub(other); }
+    void operator-=(const Point& other) { sub(other); }
     
     void operator*=(double other) { mul(other); }
     

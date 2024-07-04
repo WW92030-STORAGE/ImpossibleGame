@@ -127,10 +127,10 @@ class GameState {
         std::vector<Object> objs = getRelevantObjects();
         
         for (auto obj : objs) {
-            if (!obj.overlap(player)) continue;
-            if (obj.id == 1 || obj.id == 2) { // Large block and spike
+            if (!obj.intersect(player)) continue;
+            if (!obj.safelanding) return false;
+            if (obj.id == 1 || obj.id == 2 || obj.id == 7) { // Large block, Spike, Sawblade
 				// std::cout << "> " << obj.id << " " << obj.pos.toString() << "\n";
-                if (!obj.safelanding) return false;
             
                 double thresh1 = obj.HBBL.y + MARGIN * obj.hbheight();
                 double thresh2 = obj.HBTR.y - MARGIN * obj.hbheight();
@@ -194,6 +194,11 @@ class GameState {
 						if (i.rotation == 3) thechar = ']';
 					}
 				}
+                for (auto i : getAll(7)) {
+                    Point thepos = Point(i.pos);
+                    double dist = std::max(std::abs(thepos.x - x), std::abs(thepos.y - y));
+					if (dist < 1.5) thechar = '+';
+                }
 				for (auto i : getAll(2)) {
 					Point thepos = Point(i.pos);
 					thepos.align();
@@ -254,6 +259,7 @@ class GameState {
         if (id == 4) return UpPortal();
         if (id == 5) return DownPortal();
         if (id == 6) return OrbYellow();
+        if (id == 7) return SawbladeLarge();
         return Object();
     }
 
