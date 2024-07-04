@@ -2,7 +2,7 @@
 Simple clone of Geometry Dash and an AI to go along with it. This is meant to be a portalbe interface.
 
 # GAMEPLAY FEATURES
-- Blocks and Spikes
+- Blocks, Spikes, Sawblades
 - Yellow Orbs and Pads
 - Gravity Portals
 - More coming soon!
