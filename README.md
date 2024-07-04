@@ -10,3 +10,5 @@ Simple clone of Geometry Dash and an AI to go along with it. This is meant to be
 # FEATURES
 - Neural Network AI System
 - (Crude) visualization using `graphics.h` [(You will have to provide the libraries on your own)](https://github.com/sagargoswami2001/How-to-Setup-Graphics.h-for-Visual-Studio-Code).
+
+![Example!](img/graphicsh.jpg?raw=true)
