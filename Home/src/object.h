@@ -335,8 +335,8 @@ class Player : public Object {
     int grav = 1; // 1 = normal -1 = reverse
     double vx = 360.0 / 43.0; // This is the horizontal speed of the player. It is also how many deltas are in a second.
     double vy = 0;
-    double g[2] = {-0.876 * vx * vx, -0.876 * vx * vx};
-    double cap[2] = {2.6, 2.6};
+    double g[2] = {-0.876 * vx * vx, -1 * vx * vx * 56.0 / 135.0};
+    double cap[2] = {2.6, 1.4};
 
     int mode = 0; // 0 cube 1 ship
     
